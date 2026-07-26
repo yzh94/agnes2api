@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  agnes2api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: agnes2api
+    ports:
+      - "${SERVER_PORT:-8000}:8000"
+    restart: unless-stopped
+
+    # 持久化 SQLite 数据库文件
+    volumes:
+      - ./data:/app/data
+
+    env_file:
+      - .env
+
+    environment:
+     - TZ=Asia/Shanghai
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
