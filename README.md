@@ -34,13 +34,16 @@ OpenAI / Gemini 兼容的 **Agnes** AI 中转服务。
 
 ## 快速开始
 
-### 1. 安装依赖
+### Docker Compose 部署（推荐）
+
+#### 1. 克隆项目
 
 ```bash
-pip install -r requirements.txt
+git clone https://github.com/yzh94/agnes2api.git
+cd agnes2api
 ```
 
-### 2. 配置
+#### 2. 配置环境变量
 
 ```bash
 cp .env.example .env
@@ -68,19 +71,65 @@ SERVER_API_KEY=
 # JWT 签名秘钥（必需，至少 32 字符）
 # ============================================
 JWT_SECRET=your_super_secret_jwt_key_here_at_least_32_chars
-
-# ============================================
-# 请求超时（秒）
-# ============================================
-REQUEST_TIMEOUT=300
-
-# ============================================
-# 性能优化
-# ============================================
-ENABLE_PARALLEL_CALLS=true
 ```
 
-### 3. 启动服务
+#### 3. 启动服务
+
+```bash
+docker compose up -d
+```
+
+等待构建完成即可访问：
+
+- **API 文档**: http://localhost:8000/docs （FastAPI Swagger UI）
+- **管理后台**: http://localhost:8000/ （前端面板，需登录）
+
+首次启动时会自动创建 admin 用户（密码 `admin123`），请在登录后及时修改密码。
+
+可用模型默认已预置：
+- `agnes-2.0-flash` (text)
+- `agnes-image-2.1-flash` (image)
+- `agnes-video-v2.0` (video)
+
+#### 4. 常用命令
+
+```bash
+# 查看日志
+docker compose logs -f agnes2api
+
+# 重启服务
+docker compose restart
+
+# 停止服务
+docker compose down
+
+# 重新构建并启动
+docker compose up -d --build
+
+# 删除数据（含 SQLite 数据库）
+docker compose down -v
+```
+
+### 直接运行
+
+<details>
+<summary>如果没有 Docker 环境，也可以直接运行：</summary>
+
+#### 1. 安装 Python 依赖
+
+```bash
+pip install -r requirements.txt
+```
+
+#### 2. 配置
+
+```bash
+cp .env.example .env
+```
+
+编辑 `.env`，设置 `JWT_SECRET` 为至少 32 个字符的随机字符串。
+
+#### 3. 启动服务
 
 ```bash
 python main.py
@@ -92,18 +141,11 @@ python main.py
 uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 
-服务启动后访问以下地址：
-- **API 文档**: http://localhost:8000/docs （FastAPI Swagger UI）
-- **管理后台**: http://localhost:8000/ （前端面板，需登录）
+</details>
 
-首次启动时会自动创建 admin 用户（密码 `admin123`），请在登录后及时修改密码。
+---
 
-可用模型默认已预置：
-- `agnes-2.0-flash` (text)
-- `agnes-image-2.1-flash` (image)
-- `agnes-video-v2.0` (video)
-
-### 4. 调用示例
+### 调用示例
 
 #### 聊天完成（非流式）
 
