@@ -76,7 +76,7 @@ export const useUpstreamStore = defineStore('upstream', () => {
         `<div style="margin-bottom:12px;">${msg}</div>
          <table style="width:100%;border-collapse:collapse;font-size:13px;">
            <tr><th style="text-align:left;padding:4px;">通道</th><th style="padding:4px;">前缀</th><th style="padding:4px;">结果</th><th style="padding:4px;">详情</th></tr>
-           ${results.map(r => `<tr>
+           ${results.map((r: any) => `<tr>
              <td style="padding:4px;">${r.name}</td>
              <td style="padding:4px;font-family:monospace;">${r.masked_key}</td>
              <td style="padding:4px;color:${r.success ? '#67c23a' : '#f56c6c'};">${r.success ? '✅ 通过' : '❌ 失败'}</td>

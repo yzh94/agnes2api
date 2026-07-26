@@ -597,3 +597,70 @@ async def get_dashboard_timeline(
     from service.key_stats import get_key_stats_manager
     stats_mgr = get_key_stats_manager()
     return stats_mgr.get_model_timeline(hours)
+
+
+@router.get("/dashboard/me", response_model=dict)
+async def get_user_dashboard(
+    current_user: User = Depends(get_current_user),
+):
+    """当前用户当日统计（复用全局统计，单用户场景下等同 dashboard）。"""
+    from service.key_stats import get_key_stats_manager
+    stats_manager = get_key_stats_manager()
+    return stats_manager.get_total_stats()
+
+
+class AdminDashboardResponse(BaseModel):
+    key_pool: dict
+    user_ranking: List[dict]
+    pagination: Optional[dict] = None
+
+
+@router.get("/dashboard/admin", response_model=AdminDashboardResponse)
+async def get_admin_dashboard(
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=10, ge=1, le=100),
+    admin: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """管理员看板：Key 池统计 + 用户请求排名。"""
+    from service.key_stats import get_key_stats_manager
+
+    # Key Pool 全局统计
+    stats_manager = get_key_stats_manager()
+    key_pool = stats_manager.get_total_stats()
+
+    # 用户请求排名（按当日总请求数）
+    result = await db.execute(
+        select(User).where(User.is_active == True).order_by(User.id)
+    )
+    users = result.scalars().all()
+
+    user_ranking: List[dict] = []
+    for u in users:
+        user_ranking.append({
+            "user_id": u.id,
+            "username": u.username,
+            "total_requests": 0,
+            "success_rate": 0.0,
+            "text_requests": 0,
+            "text_success_rate": 0.0,
+            "image_requests": 0,
+            "image_success_rate": 0.0,
+            "video_requests": 0,
+            "video_success_rate": 0.0,
+        })
+
+    total_users = len(user_ranking)
+    total_pages = max(1, (total_users + page_size - 1) // page_size)
+    paginated = user_ranking[(page - 1) * page_size : page * page_size]
+
+    return AdminDashboardResponse(
+        key_pool=key_pool,
+        user_ranking=paginated,
+        pagination={
+            "page": page,
+            "page_size": page_size,
+            "total": total_users,
+            "total_pages": total_pages,
+        },
+    )

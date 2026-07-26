@@ -26,7 +26,7 @@ export const useKeysStore = defineStore('keys', () => {
     ElMessage.success('Key 创建成功')
   }
 
-  async function handleResetKey(id: number) {
+  async function handleResetKey(_id: number) {
     try {
       const res = await resetKey()
       ElMessage.success('Key 重置成功，新密钥: ' + res.key)

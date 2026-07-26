@@ -12,7 +12,7 @@ services:
 
     # 持久化 SQLite 数据库文件
     volumes:
-      - ./data:/app/data
+      - ./data/:/app/data
 
     env_file:
       - .env

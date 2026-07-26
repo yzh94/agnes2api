@@ -227,13 +227,12 @@ class KeyStatsManager:
     def get_model_timeline(self, hours: int = 24) -> list[dict]:
         """获取最近 N 小时的模型调用时间序列。
 
-        纯内存实现下，不提供历史时间序列（返回空列表或基于内存实时生成）。
-        这里返回近 N 条请求的时间戳（仅当有统计时可用）。
+        纯内存实现下，基于当前总统计生成一条汇总数据点。
         """
-        # 简化：返回总统计摘要
         total = self.get_total_stats()
+        now = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S")
         return [{
-            "timestamp": "",
+            "timestamp": now,
             "text": total["text"],
             "image": total["image"],
             "video": total["video"],

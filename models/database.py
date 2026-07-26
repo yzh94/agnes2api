@@ -1,18 +1,23 @@
 import logging
+import os
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, DateTime, Text
+from sqlalchemy.pool import NullPool
 from sqlalchemy.sql import func
 from config import settings
 
 logger = logging.getLogger(__name__)
 
-# 创建异步数据库引擎（SQLite）
-# SQLite 使用 aiosqlite 驱动，async 模式
+# 确保 data 目录存在（容器内运行时需要）
+_db_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data")
+os.makedirs(_db_dir, exist_ok=True)
+
+# 创建异步数据库引擎（SQLite + aiosqlite）
 engine = create_async_engine(
     settings.database_url,
     echo=False,
-    pool_pre_ping=True,
+    poolclass=NullPool,
 )
 
 # 创建异步会话工厂

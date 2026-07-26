@@ -31,3 +31,6 @@ data/*.json
 
 # 独立子项目（不属于本仓库）
 infinite-canvas/
+
+
+*.db

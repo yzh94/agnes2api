@@ -34,7 +34,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function loginAction(usernameStr: string, password: string): Promise<LoginResponse> {
     const res = await login(usernameStr, password)
     setToken(res.access_token)
-    setRole(res.role || 'admin')
+    // 后端只返回 access_token，role 从 /me 获取
     setUsername(usernameStr)
     return res
   }

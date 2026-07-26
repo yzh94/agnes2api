@@ -54,6 +54,7 @@ import { ElMessage } from 'element-plus'
 import { User, Lock } from '@element-plus/icons-vue'
 
 const authStore = useAuthStore()
+const router = useRouter()
 
 const username = ref('')
 const password = ref('')
@@ -61,17 +62,20 @@ const loading = ref(false)
 
 async function handleLogin() {
   if (!username.value || !password.value) {
-    ElMessage.error('请输入账号和密码')
+    ElMessage.warning('请输入账号和密码')
     return
   }
 
   loading.value = true
   try {
     await authStore.loginAction(username.value, password.value)
+    // 获取用户信息（role）
+    await authStore.fetchUserInfo()
     ElMessage.success('登录成功')
     router.push('/dashboard')
   } catch (err: any) {
-    ElMessage.error(err.response?.data?.detail || '登录失败')
+    const msg = err.response?.data?.detail || err.message || '登录失败，请检查账号密码'
+    ElMessage.error(msg)
   } finally {
     loading.value = false
   }
