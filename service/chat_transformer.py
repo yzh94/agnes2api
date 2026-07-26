@@ -12,6 +12,7 @@
 import json
 from service.upstream_client import request_upstream_with_retry
 from service.errors import UpstreamAPIError
+from service.key_stats import APIKeyStats
 from utils.http_client import get_http_client
 import logging
 import time
@@ -349,14 +350,10 @@ async def call_agnes_chat_stream(req: ChatCompletionRequest, user_id: int = 0) -
                 status_code=503,
                 detail={"message": "No available API keys in pool"},
             )
-        full_key = key_pool._get_full_key(api_key)
-        if not full_key:
-            raise UpstreamAPIError(
-                status_code=503,
-                detail={"message": f"Cannot find full key for {api_key}"},
-            )
 
-        masked_key = key_pool._compute_key_prefix(full_key)
+        full_key = api_key
+
+        masked_key = APIKeyStats._compute_key_prefix(full_key)
         logger.info(f"Stream connect | attempt={attempt + 1}/{max_retries + 1} key={masked_key}")
 
         t_http_start = time.monotonic()
