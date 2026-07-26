@@ -342,7 +342,7 @@ async def call_agnes_chat_stream(req: ChatCompletionRequest, user_id: int = 0) -
     last_exception = None
 
     for attempt in range(max_retries + 1):
-        api_key = await key_pool.get_next_key()
+        api_key = await key_pool.get_key()
         if not api_key:
             # 没有可用 Key：若之前已有失败异常则抛出，否则直接 503
             raise last_exception if last_exception else UpstreamAPIError(
