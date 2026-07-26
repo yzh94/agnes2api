@@ -10,7 +10,7 @@
       </el-button>
       <span class="mobile-page-title">{{ pageTitle }}</span>
       <div class="mobile-header-actions">
-        <el-button text @click="pwdStore.showModal = true">
+        <el-button text @click="pwdDialogVisible = true">
           <el-icon><Lock /></el-icon>
         </el-button>
         <el-button text type="danger" @click="authStore.logout()">
@@ -78,7 +78,7 @@
         </div>
         <div class="header-right">
           <span class="user-info">{{ authStore.username }}</span>
-          <el-button text @click="pwdStore.showModal = true">
+          <el-button text @click="pwdDialogVisible = true">
             <el-icon class="el-icon--left"><Lock /></el-icon>修改密码
           </el-button>
           <el-button type="danger" text @click="authStore.logout()">
@@ -93,21 +93,21 @@
     </div>
 
     <!-- 修改密码弹窗 -->
-    <el-dialog v-model="pwdStore.showModal" title="修改密码" width="400px">
-      <el-form @submit.prevent="pwdStore.handleChangePassword" label-position="top">
+    <el-dialog v-model="pwdDialogVisible" title="修改密码" width="400px">
+      <el-form ref="pwdFormRef" @submit.prevent="handleChangePassword" label-position="top">
         <el-form-item label="原密码">
-          <el-input v-model="pwdStore.form.old" type="password" show-password />
+          <el-input v-model="pwdForm.old" type="password" show-password />
         </el-form-item>
         <el-form-item label="新密码">
-          <el-input v-model="pwdStore.form.new" type="password" show-password />
+          <el-input v-model="pwdForm.new" type="password" show-password />
         </el-form-item>
         <el-form-item label="确认新密码">
-          <el-input v-model="pwdStore.form.confirm" type="password" show-password />
+          <el-input v-model="pwdForm.confirm" type="password" show-password />
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="pwdStore.showModal = false">取消</el-button>
-        <el-button type="primary" @click="pwdStore.handleChangePassword">保存修改</el-button>
+        <el-button @click="pwdDialogVisible = false">取消</el-button>
+        <el-button type="primary" :loading="pwdSubmitting" @click="handleChangePassword">保存修改</el-button>
       </template>
     </el-dialog>
   </div>
@@ -117,13 +117,17 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { usePwdStore } from '@/stores/pwd'
+import type { ElFormInstance } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { DataLine, Key, Connection, Lock, SwitchButton, Menu } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
-const pwdStore = usePwdStore()
+const pwdDialogVisible = ref(false)
+const pwdFormRef = ref<ElFormInstance>()
+const pwdForm = ref({ old: '', new: '', confirm: '' })
+const pwdSubmitting = ref(false)
 
 const activeRoute = computed(() => route.path)
 
@@ -135,6 +139,23 @@ const pageTitle = computed(() => {
   }
   return titles[route.path] || ''
 })
+
+async function handleChangePassword() {
+  if (!pwdForm.value.old || !pwdForm.value.new || !pwdForm.value.confirm) {
+    ElMessage.warning('请填写完整信息')
+    return
+  }
+  if (pwdForm.value.new !== pwdForm.value.confirm) {
+    ElMessage.warning('两次输入的新密码不一致')
+    return
+  }
+  pwdSubmitting.value = true
+  try {
+    await authStore.changePasswordAction(pwdForm.value.old, pwdForm.value.new)
+  } finally {
+    pwdSubmitting.value = false
+  }
+}
 
 function handleNavSelect(index: string) {
   router.push(index)

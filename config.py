@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     enable_parallel_calls: bool = True
 
     # ========== 数据库配置 (SQLite) ==========
-    database_url: str = "sqlite:///agnes2api.db"
+    database_url: str = "sqlite+aiosqlite:///data/agnes2api.db"
 
     # ========== JWT 密钥 ==========
     jwt_secret: str = ""

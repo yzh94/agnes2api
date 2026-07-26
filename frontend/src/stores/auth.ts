@@ -8,6 +8,7 @@ import type { LoginResponse } from '@/types/api'
 export const useAuthStore = defineStore('auth', () => {
   const token = ref(localStorage.getItem('agnes2api_token') || '')
   const isLoggedIn = computed(() => !!token.value)
+  const role = ref('admin')
 
   const username = ref('')
 
@@ -20,6 +21,10 @@ export const useAuthStore = defineStore('auth', () => {
     username.value = u
   }
 
+  function setRole(r: string) {
+    role.value = r
+  }
+
   function clearToken() {
     token.value = ''
     username.value = ''
@@ -29,12 +34,14 @@ export const useAuthStore = defineStore('auth', () => {
   async function loginAction(usernameStr: string, password: string): Promise<LoginResponse> {
     const res = await login(usernameStr, password)
     setToken(res.access_token)
+    setRole(res.role || 'admin')
     setUsername(usernameStr)
     return res
   }
 
   async function logout() {
     clearToken()
+    setRole('admin')
     window.location.href = '/login'
   }
 
@@ -56,9 +63,11 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     token,
     username,
+    role,
     isLoggedIn,
     setToken,
     setUsername,
+    setRole,
     clearToken,
     loginAction,
     logout,

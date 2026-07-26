@@ -1,5 +1,5 @@
 import http from './http'
-import type { KeyResponse, UpstreamKeyResponse, UpstreamStat, GlobalModelStats } from '@/types/api'
+import type { KeyResponse, UpstreamKeyResponse, UpstreamStat, GlobalModelStats, AdminDashboardStats } from '@/types/api'
 
 export async function getKeys(): Promise<KeyResponse[]> {
   return http.get('/keys')
@@ -61,10 +61,18 @@ export async function fetchDashboardStats(): Promise<GlobalModelStats> {
   return http.get('/dashboard')
 }
 
+export async function fetchUserDashboardStats(): Promise<GlobalModelStats> {
+  return http.get('/dashboard/me')
+}
+
 export async function fetchTimeline(hours: number = 24): Promise<any[]> {
   return http.get('/dashboard/timeline', { params: { hours } })
 }
 
 export async function fetchMe(): Promise<{ username: string; role: string }> {
   return http.get('/me')
+}
+
+export async function fetchAdminDashboard(page: number = 1, pageSize: number = 10): Promise<AdminDashboardStats> {
+  return http.get('/dashboard/admin', { params: { page, page_size: pageSize } })
 }
