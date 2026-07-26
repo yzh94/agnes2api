@@ -47,7 +47,7 @@ class ClientKey(Base):
     __tablename__ = "client_keys"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=False, unique=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=False)
     key = Column(String(100), unique=True, index=True, nullable=False)
     name = Column(String(100), nullable=False)
     status = Column(String(20), default="active")  # 'active' or 'disabled'

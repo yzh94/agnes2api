@@ -217,10 +217,11 @@ async def create_key(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> KeyResponse:
-    """创建授权密钥。"""
+    """创建授权密钥。每用户最多 10 把。"""
     result = await db.execute(select(ClientKey).where(ClientKey.user_id == current_user.id))
-    if result.scalars().first():
-        raise HTTPException(status_code=400, detail="每用户仅 1 把授权密钥")
+    existing = result.scalars().all()
+    if len(existing) >= 10:
+        raise HTTPException(status_code=400, detail="每用户最多只能创建 10 把授权密钥")
 
     new_key = f"sk-agnes-{uuid.uuid4().hex}"
     client_key = ClientKey(user_id=current_user.id, key=new_key, name=req.name, quota=-1.0, used_quota=0.0)
