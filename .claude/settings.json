@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx vue-tsc *)",
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "WebFetch(domain:www.newapi.ai)",
+      "Bash(python3 -c ' *)",
+      "Bash(sed -i '/AGNES_API_KEYS/d' /data/agnes2api/.env.example)",
+      "Bash(sed -i '/AGNES_API_KEYS/d' /data/agnes2api/README.md)",
+      "Bash(python3 -m py_compile /data/agnes2api/service/key_disable.py /data/agnes2api/service/chat_transformer.py /data/agnes2api/service/transformer.py /data/agnes2api/service/video.py /data/agnes2api/router/management.py /data/agnes2api/config.py /data/agnes2api/main.py /data/agnes2api/models/database.py)",
+      "Bash(python3 -m py_compile /data/agnes2api/config.py)",
+      "Bash(cat /tmp/claude-1000/bash-*-22.log || true)",
+      "Read(//tmp/claude-1000/**)",
+      "Bash(npm install *)",
+      "Bash(git add *)",
+      "Bash(git commit -m 'feat: 自动禁用失效的上游通道 *)",
+      "Bash(git push *)",
+      "Bash(python3 -c \"from router.management import router\")",
+      "Bash(docker compose *)",
+      "Bash(git commit *)"
+    ]
+  }
+}

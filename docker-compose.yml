@@ -1,0 +1,28 @@
+services:
+  agnes2api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: agnes2api
+    ports:
+      - "${SERVER_PORT:-8000}:8000"
+    restart: unless-stopped
+    
+    # 数据卷挂载：持久化统计数据和LLM内容日志
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    
+    # 环境变量从 .env 文件读取
+    env_file:
+      - .env
+    
+    environment:
+     - TZ=Asia/Shanghai
+    # 日志驱动
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    

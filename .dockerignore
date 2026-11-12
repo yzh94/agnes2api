@@ -1,0 +1,35 @@
+# Python 缓存
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# 虚拟环境
+venv/
+.venv/
+bin/
+include/
+lib/
+lib64/
+pyvenv.cfg
+
+# IDE 和编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 环境文件（.env 包含敏感信息，不应打入镜像；运行时通过挂载或环境变量注入）
+.env
+
+# Git
+.git/
+.gitignore
+
+# 文档和杂项
+README.md
+.joycode/
+
+# Docker 自身
+Dockerfile
+.dockerignore
+docker-compose.yml
